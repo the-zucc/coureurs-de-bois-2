@@ -1,9 +1,28 @@
 @startuml
-interface MessageReceiver {
-    +Messenger 
+interface Component {
+    +{abstract}String getId()
+    +{abstract}ParentComponent getParent()
+    +{abstract}void update(float nanoSeconds)
 }
-abstract class Component {
-    +List<Component> getChildren()
-    +Component getParent()
+interface ParentComponent {
+    +{abstract}void addChild(Component child)
+    +{abstract}Component getChild(String childId)
+    +{abstract}Iterator iterator()
 }
+ParentComponent -> Component
+class Messenger {
+    +void sendMessage(String message, String senderId, Regex targetId, Object... params)
+    +void sendMessage(String message, String senderId, String targetId, Object... params)
+}
+interface MessageReceiver extends Component {
+    +{abstract}Messenger getMessenger();
+    +{abstract}onMessageReceived(String message, MessageAction action);
+    +{abstract}executeAction(String message, Object... Params)
+}
+abstract class MessageAction{
+    +{abstract}void run(Object... params)
+}
+MessageReceiver -> Messenger : sends message
+Messenger -> MessageReceiver : delivers to
+MessageReceiver *-- MessageAction : triggers
 @enduml
