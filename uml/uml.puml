@@ -1,0 +1,9 @@
+@startuml
+interface MessageReceiver {
+    +Messenger 
+}
+abstract class Component {
+    +List<Component> getChildren()
+    +Component getParent()
+}
+@enduml
