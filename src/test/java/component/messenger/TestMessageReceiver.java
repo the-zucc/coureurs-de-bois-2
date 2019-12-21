@@ -22,7 +22,7 @@ public class TestMessageReceiver implements MessageReceiver {
         this.messageActions = new HashMap<>();
         this.parent = parent;
         this.messenger = messenger;
-        this.onMessage(STRING_TEST_MESSAGE_RECEIVER, (params) -> {
+        this.onMessage(STRING_TEST_MESSAGE_RECEIVER, (senderId, params) -> {
             this.BOOLEAN_HAS_TEST_BEEN_RUN = true;
         });
     }
@@ -40,7 +40,7 @@ public class TestMessageReceiver implements MessageReceiver {
 
     @Override
     public void executeAction(String message, String senderId, Object... args){
-        this.messageActions.get(message).run(args);
+        this.messageActions.get(message).run(senderId, args);
     }
 
     @Override
@@ -55,6 +55,6 @@ public class TestMessageReceiver implements MessageReceiver {
 
     @Override
     public void update(float nanoSeconds) {
-
+        
     }
 }

@@ -7,6 +7,7 @@ interface Component {
 interface ParentComponent {
     +{abstract}void addChild(Component child)
     +{abstract}Component getChild(String childId)
+    +{abstract}Component removeChild(String id)
     +{abstract}Iterator iterator()
 }
 ParentComponent -> Component

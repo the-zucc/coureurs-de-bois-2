@@ -69,11 +69,7 @@ public class GameMap implements MessageReceiver, ParentComponent {
 
     @Override
     public void update(float nanoSeconds) {
-        Iterator i = this.iterator();
+
     }
 
-    @Override
-    public Iterator iterator() {
-        return null;
-    }
 }
