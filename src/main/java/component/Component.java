@@ -1,7 +1,9 @@
 package component;
 
+import game.GameEntity;
+
 public interface Component {
     String getId();
-    ParentComponent getParent();
+    GameEntity getEntity();
     void update(float nanoSeconds);
 }

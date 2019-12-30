@@ -1,27 +1,121 @@
+@startuml ECS classes
+interface Component{
+    +getId():String
+    +{abstract}getEntity():GameEntity
+    +{abstract}update(float nanoSeconds):void
+}
+
+interface GameEntity{
+    +getId():String
+    +{abstract}addComponent(Component child):void
+    +{abstract}getComponent(String componentId):Component
+    +{abstract}removeComponent(String componentId):Component
+}
+GameEntity "1" *- "*" Component
+Component "1" *- "1" GameEntity
+
+class VisualComponent implements Component{
+    -setMotionState(Transform t):void
+    -getVisualEntity():Visual
+    #{abstract}buildVisuals():Group
+    +getVisuals():Group
+}
+
+abstract class RigidBodyComponent implements Component{
+    +{static}convert(MotionState):Transform
+    #{abstract}buildRigidBody()
+    +getRigidBody():RigidBody
+    +getMotionState():MotionState
+}
+
+interface Physical{
+    #{abstract}buildRigidBodyComponent():RigidBodyComponent
+    +{abstract}getRigidBodyComponent():RigidBodyComponent
+    +{abstract}getMotionState():Transform
+    +{static}convertMotionState(MotionState state):Transform
+}
+
+interface Visual{
+    #{abstract}buildVisualComponent():VisualComponent
+    +{abstract}getVisualComponent():VisualComponent
+}
+
+abstract class PhysicalGameEntity implements GameEntity, Visual, Physical{
+    -rigidBodyComponent:RigidBodyComponent
+    -visualComponent:VisualComponent
+    +convertMotionState(MotionState):Transform
+    +getMotionState():Transform
+    +updateVisuals():void
+    +{abstract}buildVisualComponent():VisualComponent
+    +{abstract}buildRigidBodyComponent():RigidBodyComponent
+}
+PhysicalGameEntity "1" *-up- "1" RigidBodyComponent
+PhysicalGameEntity "1" *-up- "1" VisualComponent
+note right of PhysicalGameEntity::getMotionState
+gets the motion state
+from the rigid body
+component
+end note
+
+class ControllableComponent implements Component{
+    +bindControls():void
+    +getControllable():ControllableGameEntity
+    +onKeyPressed():void
+}
+
+interface Controllable{
+    +{abstract}getControllableComponent():ControllableComponent
+}
+
+abstract class ControllableGameEntity extends PhysicalGameEntity implements Controllable{
+    +getControllableComponent():ControllableComponent
+}
+Controllable "1" *-up- "*" ControllableComponent
+@enduml
 @startuml
-interface Component {
-    +{abstract}String getId()
-    +{abstract}ParentComponent getParent()
-    +{abstract}void update(float nanoSeconds)
-}
-interface ParentComponent {
-    +{abstract}void addChild(Component child)
-    +{abstract}Component getChild(String childId)
-    +{abstract}Component removeChild(String id)
-    +{abstract}Iterator iterator()
-}
-ParentComponent -> Component
+control gameLoop
+control jBulletDynamicsWorld
+entity rigidBodyComponent
+loop infinite times
+    ==update physics world==
+    gameLoop -> jBulletDynamicsWorld:stepSimulation()
+    loop n times
+        jBulletDynamicsWorld -> rigidBodyComponent:
+        rigidBodyComponent --> jBulletDynamicsWorld
+    end
+    jBulletDynamicsWorld --> gameLoop:physics updated
+    ==update behaviour components==
+    control javaFX3DWorld
+    entity visualComponent
+    entity physicalGameEntity
+    ==update 3D world==
+    gameLoop -> javaFX3DWorld:update(nanoSeconds)
+    loop m times
+        javaFX3DWorld -> visualComponent:update(nanoSeconds)
+        visualComponent -> physicalGameEntity:getEntity().getMotionState()
+        physicalGameEntity -> rigidBodyComponent:getMotionState()
+        rigidBodyComponent --> physicalGameEntity:MotionState
+        physicalGameEntity -> physicalGameEntity:convertMotionState(motionState)
+        physicalGameEntity --> visualComponent:Transform
+        visualComponent -> visualComponent:setMotionState(transform)
+        visualComponent --> javaFX3DWorld
+    end
+    javaFX3DWorld --> gameLoop:visuals updated
+end
+@enduml
+
+@startuml
 class Messenger {
-    +void sendMessage(String message, String senderId, Regex targetId, Object... params)
-    +void sendMessage(String message, String senderId, String targetId, Object... params)
+    +publish(String message, String senderId, Regex targetId, Object... params):void
+    +publish(String message, String senderId, String targetId, Object... params):void
 }
-interface MessageReceiver extends Component {
-    +{abstract}Messenger getMessenger();
-    +{abstract}onMessageReceived(String message, MessageAction action);
-    +{abstract}executeAction(String message, Object... Params)
+interface MessageReceiver {
+    +{abstract}getMessenger():Messenger
+    +{abstract}subscribe(String message, MessageAction action):void
+    +{abstract}executeAction(String message, Object... Params):void
 }
-abstract class MessageAction{
-    +{abstract}void run(Object... params)
+interface MessageAction{
+    +{abstract}void run(String senderId, Object... params)
 }
 MessageReceiver -> Messenger : sends message
 Messenger -> MessageReceiver : delivers to

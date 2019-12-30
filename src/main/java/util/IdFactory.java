@@ -9,6 +9,9 @@ public class IdFactory {
     public final static String ID_PREFIX_HUMAN = "human";
     public final static String[] ID_PREFIXES = {ID_PREFIX_HUMAN, ID_PREFIX_TREE};
     public static final String ID_PREFIX_MAP = "map";
+    public static final String ID_PREFIX_RBC = "rigid_body";
+    public static final String ID_PREFIX_VC = "comp_3d";
+    public static final String ID_PREFIX_GAME_ENTITY = "game_entity";
     private final static Map<String, Pattern> prefixPatterns = initPrefixPatterns();
 
     private static Map<String, Pattern> initPrefixPatterns() {
