@@ -1,7 +1,7 @@
 package component;
 
 import entity.Physical;
-import game.GameEntity;
+import entity.GameEntity;
 import javafx.scene.Group;
 import javafx.scene.transform.Transform;
 import util.IdFactory;
@@ -42,7 +42,6 @@ public abstract class VisualComponent implements Component {
         //TODO add stuff to this method
     }
     protected final void setMotionState(Transform t){
-        this.getVisuals().getTransforms().clear();
         this.getVisuals().getTransforms().add(t);
     }
 }

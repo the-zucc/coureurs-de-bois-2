@@ -1,10 +1,10 @@
-package game;
+package entity;
 
 import component.RigidBodyComponent;
 import component.VisualComponent;
-import util.IdFactory;
+import game.Controllable;
 
-public abstract class ControllableGameEntity extends PhysicalGameEntity implements Controllable{
+public abstract class ControllableGameEntity extends PhysicalGameEntity implements Controllable {
     @Override
     protected abstract String generateId();
 

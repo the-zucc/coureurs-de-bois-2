@@ -1,6 +1,6 @@
 package component;
 
-import game.GameEntity;
+import entity.GameEntity;
 
 public interface Component {
     String getId();
